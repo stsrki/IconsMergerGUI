@@ -307,7 +307,10 @@ namespace IconsMergerGUI.Forms
                             if ( char.IsNumber( suggestedName[0] ) )
                                 suggestedName = "_" + suggestedName;
 
-                            sbMaterialStrings.AppendLine( $"    public static readonly string {suggestedName} = \"{icon.Name}\";" );
+                            if ( typeof( object ).GetMember( suggestedName ).Length > 0 )
+                                sbMaterialStrings.AppendLine( $"    public static readonly new string {suggestedName} = \"{icon.Name}\";" );
+                            else
+                                sbMaterialStrings.AppendLine( $"    public static readonly string {suggestedName} = \"{icon.Name}\";" );
                         }
 
                         foreach ( var icon in mappedMaterialIcons )
@@ -322,7 +325,10 @@ namespace IconsMergerGUI.Forms
                             if ( char.IsNumber( suggestedName[0] ) )
                                 suggestedName = "_" + suggestedName;
 
-                            sbFontAwesomeStrings.AppendLine( $"    public static readonly string {suggestedName} = \"{icon.Name}\";" );
+                            if ( typeof( object ).GetMember( suggestedName ).Length > 0 )
+                                sbFontAwesomeStrings.AppendLine( $"    public static readonly new string {suggestedName} = \"fa-{icon.Name}\";" );
+                            else
+                                sbFontAwesomeStrings.AppendLine( $"    public static readonly string {suggestedName} = \"fa-{icon.Name}\";" );
                         }
 
                         sbEnums.AppendLine( "}" );
