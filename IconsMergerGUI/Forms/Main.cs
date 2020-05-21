@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using Ganss.Excel;
 using IconsMergerGUI.Controls;
 using IconsMergerGUI.Forms;
 using IconsMergerGUI.Models;
@@ -199,6 +200,72 @@ namespace IconsMergerGUI.Forms
                             mappedIcon.Icons.Add( icon );
 
                             mappedIconCollection.Update( mappedIcon );
+                        }
+
+                        LoadAll();
+                    }
+                }
+            }
+            catch ( Exception exc )
+            {
+                MessageBox.Show( exc.Message );
+            }
+        }
+
+        public class IconNameInfo
+        {
+            [Column( 1 )]
+            public string Material { get; set; }
+
+            [Column( 3 )]
+            public string FontAwesome { get; set; }
+
+            public override string ToString()
+            {
+                return $"m: {Material} fa: {FontAwesome}";
+            }
+        }
+
+        private void btnAutoMapByExcel_Click( object sender, EventArgs e )
+        {
+            try
+            {
+                using ( var dialog = new OpenFileDialog() )
+                {
+                    if ( dialog.ShowDialog() == DialogResult.OK )
+                    {
+                        var allExcelIconNames = new ExcelMapper( dialog.FileName )
+                            .Fetch<IconNameInfo>()
+                            .Where( x => !string.IsNullOrEmpty( x.FontAwesome ) && x.FontAwesome != "NO EQUIVALENT" );
+
+                        var iconsToInsert = new List<IconNameInfo>();
+
+                        foreach ( var excelIconName in allExcelIconNames )
+                        {
+                            if ( mappedIconCollection.Exists( x => x.NormalizedMappedName == excelIconName.FontAwesome ) )
+                                continue;
+
+                            var faIcon = iconCollection.FindOne( x => x.Pack == Constants.FontAwesome && x.NormalizedName == excelIconName.FontAwesome );
+
+                            var matIcon = iconCollection.FindOne( x => x.Pack == Constants.Material && x.NormalizedName == excelIconName.Material.Replace( "_", "-" ) );
+
+                            if ( faIcon == null || matIcon == null )
+                                continue;
+
+                            var suggestedNewIconName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase( excelIconName.FontAwesome.Replace( "-", " " ) ).Replace( " ", string.Empty );
+
+                            var mappedIcon = new MappedIcon
+                            {
+                                Name = suggestedNewIconName,
+                                NormalizedMappedName = excelIconName.FontAwesome,
+                                Icons = new List<Icon>()
+                                {
+                                    faIcon,
+                                    matIcon,
+                                }
+                            };
+
+                            mappedIconCollection.Insert( mappedIcon );
                         }
 
                         LoadAll();

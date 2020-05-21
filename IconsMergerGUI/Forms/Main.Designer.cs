@@ -34,9 +34,10 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblMappedIcons = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.btnIconsImport = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnIconsImport = new System.Windows.Forms.ToolStripButton();
             this.btnIconsExport = new System.Windows.Forms.ToolStripButton();
+            this.btnAutoMapByExcel = new System.Windows.Forms.ToolStripButton();
             this.btnAutoMapExisting = new System.Windows.Forms.ToolStripButton();
             this.btnAutoMap = new System.Windows.Forms.ToolStripButton();
             this.btnMap = new System.Windows.Forms.ToolStripButton();
@@ -121,6 +122,7 @@
             this.btnIconsImport,
             this.toolStripSeparator2,
             this.btnIconsExport,
+            this.btnAutoMapByExcel,
             this.btnAutoMapExisting,
             this.btnAutoMap,
             this.btnMap});
@@ -129,6 +131,11 @@
             this.toolStrip1.Size = new System.Drawing.Size(1182, 39);
             this.toolStrip1.TabIndex = 16;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 39);
             // 
             // btnIconsImport
             // 
@@ -140,11 +147,6 @@
             this.btnIconsImport.Text = "Import Icons";
             this.btnIconsImport.Click += new System.EventHandler(this.btnIconsImport_Click);
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 39);
-            // 
             // btnIconsExport
             // 
             this.btnIconsExport.Image = global::IconsMergerGUI.Properties.Resources.source_code;
@@ -154,6 +156,17 @@
             this.btnIconsExport.Size = new System.Drawing.Size(121, 36);
             this.btnIconsExport.Text = "Generate Code";
             this.btnIconsExport.Click += new System.EventHandler(this.btnIconsExport_Click);
+            // 
+            // btnAutoMapByExcel
+            // 
+            this.btnAutoMapByExcel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnAutoMapByExcel.Image = global::IconsMergerGUI.Properties.Resources.excel_imports;
+            this.btnAutoMapByExcel.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnAutoMapByExcel.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnAutoMapByExcel.Name = "btnAutoMapByExcel";
+            this.btnAutoMapByExcel.Size = new System.Drawing.Size(161, 36);
+            this.btnAutoMapByExcel.Text = "Import Excel And Map";
+            this.btnAutoMapByExcel.Click += new System.EventHandler(this.btnAutoMapByExcel_Click);
             // 
             // btnAutoMapExisting
             // 
@@ -228,6 +241,7 @@
         private System.Windows.Forms.ToolStripButton btnAutoMapExisting;
         private System.Windows.Forms.ToolStripButton btnAutoMap;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton btnAutoMapByExcel;
     }
 }
 
