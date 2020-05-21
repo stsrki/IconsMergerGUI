@@ -262,46 +262,83 @@ namespace IconsMergerGUI.Forms
 
                         var packs = packCollection.FindAll().OrderBy( x => x.Name ).ToList();
                         var mappedIcons = mappedIconCollection.FindAll().OrderBy( x => x.Name ).ToList();
-
+                        var icons = iconCollection.FindAll().OrderBy( x => x.Name ).ToList();
 
                         var sbEnums = new StringBuilder();
-                        var sbMaterialDict = new StringBuilder();
-                        var sbFontAwesomeDict = new StringBuilder();
+
+                        var sbMaterialDictionary = new StringBuilder();
+                        var sbMaterialStrings = new StringBuilder();
+
+                        var sbFontAwesomeDictionary = new StringBuilder();
+                        var sbFontAwesomeStrings = new StringBuilder();
 
                         sbEnums.AppendLine( "public enum IconName" );
                         sbEnums.AppendLine( "{" );
 
-                        sbMaterialDict.AppendLine( "private static Dictionary<IconName, string> names = new Dictionary<IconName, string>" );
-                        sbMaterialDict.AppendLine( "{" );
+                        sbMaterialDictionary.AppendLine( "private static Dictionary<IconName, string> names = new Dictionary<IconName, string>" );
+                        sbMaterialDictionary.AppendLine( "{" );
 
-                        sbFontAwesomeDict.AppendLine( "private static Dictionary<IconName, string> names = new Dictionary<IconName, string>" );
-                        sbFontAwesomeDict.AppendLine( "{" );
+                        sbMaterialStrings.AppendLine( "public static class MaterialIcons" );
+                        sbMaterialStrings.AppendLine( "{" );
+
+                        sbFontAwesomeDictionary.AppendLine( "private static Dictionary<IconName, string> names = new Dictionary<IconName, string>" );
+                        sbFontAwesomeDictionary.AppendLine( "{" );
+
+                        sbFontAwesomeStrings.AppendLine( "public static class FontAwesomeIcons" );
+                        sbFontAwesomeStrings.AppendLine( "{" );
 
                         foreach ( var mappedIcon in mappedIcons )
                         {
                             sbEnums.AppendLine( $"    {mappedIcon.Name}," );
                         }
 
-                        var fontAwesomeIcons = ( from m in mappedIcons from i in m.Icons where i.Pack == Constants.FontAwesome orderby m.Name ascending select new { EnumName = m.Name, IconName = i.Name } ).ToList();
-                        var materialIcons = ( from m in mappedIcons from i in m.Icons where i.Pack == Constants.Material orderby m.Name ascending select new { EnumName = m.Name, IconName = i.Name } ).ToList();
+                        var mappedFontAwesomeIcons = ( from m in mappedIcons from i in m.Icons where i.Pack == Constants.FontAwesome orderby m.Name ascending select new { EnumName = m.Name, IconName = i.Name } ).ToList();
+                        var mappedMaterialIcons = ( from m in mappedIcons from i in m.Icons where i.Pack == Constants.Material orderby m.Name ascending select new { EnumName = m.Name, IconName = i.Name } ).ToList();
 
-                        foreach ( var icon in fontAwesomeIcons )
+                        foreach ( var icon in mappedFontAwesomeIcons )
                         {
-                            sbFontAwesomeDict.AppendLine( $"    {{ IconName.{icon.EnumName}, \"fa-{icon.IconName}\" }}," );
+                            sbFontAwesomeDictionary.AppendLine( $"    {{ IconName.{icon.EnumName}, \"fa-{icon.IconName}\" }}," );
                         }
 
-                        foreach ( var icon in materialIcons )
+                        foreach ( var icon in icons.Where( x => x.Pack == Constants.Material ).OrderBy( x => x.Name ) )
                         {
-                            sbMaterialDict.AppendLine( $"    {{ IconName.{icon.EnumName}, \"{icon.IconName}\" }}," );
+                            var suggestedName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase( icon.Name.Replace( "_", " " ) ).Replace( " ", string.Empty );
+
+                            if ( char.IsNumber( suggestedName[0] ) )
+                                suggestedName = "_" + suggestedName;
+
+                            sbMaterialStrings.AppendLine( $"    public static readonly string {suggestedName} = \"{icon.Name}\";" );
+                        }
+
+                        foreach ( var icon in mappedMaterialIcons )
+                        {
+                            sbMaterialDictionary.AppendLine( $"    {{ IconName.{icon.EnumName}, \"{icon.IconName}\" }}," );
+                        }
+
+                        foreach ( var icon in icons.Where( x => x.Pack == Constants.FontAwesome ).OrderBy( x => x.Name ) )
+                        {
+                            var suggestedName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase( icon.Name.Replace( "-", " " ) ).Replace( " ", string.Empty );
+
+                            if ( char.IsNumber( suggestedName[0] ) )
+                                suggestedName = "_" + suggestedName;
+
+                            sbFontAwesomeStrings.AppendLine( $"    public static readonly string {suggestedName} = \"{icon.Name}\";" );
                         }
 
                         sbEnums.AppendLine( "}" );
-                        sbMaterialDict.AppendLine( "};" );
-                        sbFontAwesomeDict.AppendLine( "};" );
+                        sbMaterialDictionary.AppendLine( "};" );
+                        sbMaterialStrings.AppendLine( "}" );
+
+                        sbFontAwesomeDictionary.AppendLine( "};" );
+                        sbFontAwesomeStrings.AppendLine( "}" );
 
                         File.WriteAllText( Path.Combine( selectedPath, "enums.cs" ), sbEnums.ToString() );
-                        File.WriteAllText( Path.Combine( selectedPath, "material.cs" ), sbMaterialDict.ToString() );
-                        File.WriteAllText( Path.Combine( selectedPath, "fontawesome.cs" ), sbFontAwesomeDict.ToString() );
+
+                        File.WriteAllText( Path.Combine( selectedPath, "material-dictionary.cs" ), sbMaterialDictionary.ToString() );
+                        File.WriteAllText( Path.Combine( selectedPath, "material-strings.cs" ), sbMaterialStrings.ToString() );
+
+                        File.WriteAllText( Path.Combine( selectedPath, "fontawesome-dictionary.cs" ), sbFontAwesomeDictionary.ToString() );
+                        File.WriteAllText( Path.Combine( selectedPath, "fontawesome.-strings.cs" ), sbFontAwesomeStrings.ToString() );
                     }
                 }
             }
